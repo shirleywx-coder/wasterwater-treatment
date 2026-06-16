@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>水处理工艺智能决策 | 废水+给水双模块 | 环境科学教学</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #cfdfe8 0%, #bdd5e4 100%);
+            font-family: 'Segoe UI', Roboto, 'Microsoft YaHei', sans-serif;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+
+        .sim-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 1.5rem 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #0f687d, #1c8ea0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .sub {
+            color: #1b687b;
+            border-left: 4px solid #38b2c4;
+            padding-left: 1rem;
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            padding: 8px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #156d80;
+            transition: 0.2s;
+        }
+        .mode-btn.active {
+            background: linear-gradient(115deg, #1f8f9c, #177a85);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .mode-panel { display: none; }
+        .mode-panel.active { display: block; }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+        }
+        .left-panel {
+            flex: 1.2;
+            min-width: 290px;
+            background: #f4fafd;
+            border-radius: 1.8rem;
+            padding: 1.2rem;
+            border: 1px solid #cde6ef;
+        }
+        .right-panel {
+            flex: 2.8;
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid #cde2ec;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+
+        .scenario-card {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid #cbe3ed;
+            transition: 0.1s;
+        }
+        .scenario-card.active {
+            border-color: #2c9bb0;
+            background: #eef7fc;
+        }
+        .scenario-card h4 {
+            font-size: 1rem;
+            color: #136f7e;
+            display: flex;
+            justify-content: space-between;
+        }
+        .scenario-card p {
+            font-size: 0.7rem;
+            color: #2d7a88;
+        }
+
+        .custom-params {
+            margin-top: 1rem;
+            background: #eef3f7;
+            border-radius: 1.2rem;
+            padding: 1rem;
+        }
+        .param-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: nowrap;
+        }
+        .param-row label {
+            width: 85px;
+            font-weight: 600;
+            color: #136571;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        select {
+            flex: 1;
+            padding: 6px 8px;
+            border-radius: 30px;
+            border: 1px solid #c1dae5;
+            font-size: 0.8rem;
+            background: white;
+            min-width: 0;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #e67e22;
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        button.apply-btn {
+            background: #2c9bb0;
+            border: none;
+            color: white;
+            border-radius: 40px;
+            padding: 8px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .right-panel .indicator {
+            font-size: 0.95rem;
+            background: #f0f9f0;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            line-height: 2;
+        }
+        .process-block {
+            padding: 14px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 6px solid;
+        }
+        .process-block h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .tech-item {
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-size: 0.95rem;
+            border: 1px solid;
+        }
+        /* 按区块配色 */
+        .block-pre  .tech-item { background:#e3f2fd; border-color:#90caf9; }
+        .block-bio  .tech-item { background:#e8f5e9; border-color:#a5d6a7; }
+        .block-deep .tech-item { background:#fff3e0; border-color:#ffcc80; }
+        .rec-combo {
+            background: #ebf6fa;
+            padding: 12px 15px;
+            border-radius: 1rem;
+            font-size: 1rem;
+            margin-top: 12px;
+            line-height: 1.4;
+        }
+        .rec-combo strong {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 6px;
+            color: #c25b1c;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #cee2ec;
+            color: #2c6b7a;
+        }
+        @media (max-width: 800px) {
+            .row { flex-direction: column; }
+            .param-row { flex-wrap: wrap; }
+            .param-row label { width: 100%; margin-bottom: 4px; }
+        }
+    </style>
+</head>
+<body>
+<div class="sim-container">
+    <div class="header">
+        <h1><i class="fas fa-microchip"></i> 水处理工艺智能决策仿真</h1>
+        <div class="sub">选择典型场景 → 自动显示水质指标范围，生成可选工艺组合 | 自定义参数默认展开，自由组合并提示合理性</div>
+    </div>
+
+    <div class="mode-tabs">
+        <button class="mode-btn active" data-mode="wastewater">🏭 废水处理工艺</button>
+        <button class="mode-btn" data-mode="water">💧 给水处理工艺</button>
+    </div>
+
+    <!-- ===== 废水模块 ===== -->
+    <div id="wastewaterPanel" class="mode-panel active">
+        <div class="row">
+            <div class="left-panel">
+                <h3 style="font-size:1.1rem; margin-bottom:0.8rem;"><i class="fas fa-industry"></i> 典型废水场景</h3>
+                <div id="wwCardList"></div>
+                <div class="custom-params" id="wwCustomParams">
+                    <h4 style="font-size:0.9rem; margin-bottom:8px;">📊 自定义参数 (等级)</h4>
+                    <div class="param-row"><label>COD等级</label><select id="ww_cod"><option value="low">低 (<500 mg/L)</option><option value="mid" selected>中 (500-2000)</option><option value="high">高 (2000-10000)</option><option value="vhigh">极高 (>10000)</option></select></div>
+                    <div class="param-row"><label>可生化性 B/C</label><select id="ww_bc"><option value="low">难生化 (<0.3)</option><option value="mid" selected>一般 (0.3-0.5)</option><option value="high">易生化 (>0.5)</option></select></div>
+                    <div class="param-row"><label>氨氮等级</label><select id="ww_nh3"><option value="low">低 (<50 mg/L)</option><option value="mid" selected>中 (50-500)</option><option value="high">高 (500-2000)</option><option value="vhigh">极高 (>2000)</option></select></div>
+                    <div class="param-row"><label>总磷等级</label><select id="ww_tp"><option value="low">低 (<5 mg/L)</option><option value="mid" selected>中 (5-50)</option><option value="high">高 (50-200)</option><option value="vhigh">极高 (>200)</option></select></div>
+                    <div class="param-row"><label>毒性/难降解</label><select id="ww_tox"><option value="none">无毒性</option><option value="moderate" selected>中等毒性</option><option value="high">高毒性/难降解</option></select></div>
+                    <div class="param-row"><label>盐分 TDS</label><select id="ww_salt"><option value="low">低盐 (<2000)</option><option value="mid" selected>中盐 (2000-10000)</option><option value="high">高盐 (>10000)</option></select></div>
+                    <div class="param-row"><label>悬浮物 SS</label><select id="ww_ss"><option value="low">较低 (<200)</option><option value="mid" selected>中等 (200-1000)</option><option value="high">高 (>1000)</option></select></div>
+                    <div class="param-row"><label>油类含量</label><select id="ww_oil"><option value="low">低 (<20)</option><option value="mid" selected>中等 (20-200)</option><option value="high">高 (>200)</option></select></div>
+                    <div class="param-row"><label>pH等级</label><select id="ww_ph"><option value="acid">酸性 (<6.5)</option><option value="neutral" selected>中性 (6.5-8.5)</option><option value="alkaline">碱性 (>8.5)</option></select></div>
+                    <div class="param-row"><label>排放标准</label><select id="ww_std"><option value="grade1A" selected>一级A (GB18918)</option><option value="grade1B">一级B</option><option value="reuse">再生回用</option></select></div>
+                    <div id="wwWarning" class="warning" style="display:none;"></div>
+                    <button id="applyCustomWW" class="apply-btn">应用自定义参数 → 生成工艺</button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <h3 style="font-size:1.4rem;"><i class="fas fa-chalkboard-user"></i> 推荐工艺组合</h3>
+                <div id="wwResult">点击左侧典型场景或自定义参数</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 给水模块 ===== -->
+    <div id="waterPanel" class="mode-panel">
+        <div class="row">
+            <div class="left-panel">
+                <h3 style="font-size:1.1rem;"><i class="fas fa-tint"></i> 典型用水场景</h3>
+                <div id="waterCardList"></div>
+                <div class="custom-params" id="waterCustomParams">
+                    <h4 style="font-size:0.9rem;">📊 自定义参数 (等级)</h4>
+                    <div class="param-row"><label>水源类型</label><select id="wt_source"><option value="surface">地表水</option><option value="ground">地下水</option><option value="brackish">苦咸水</option><option value="seawater">海水</option></select></div>
+                    <div class="param-row"><label>浊度等级</label><select id="wt_turb"><option value="low">低浊 (<5 NTU)</option><option value="mid" selected>中浊 (5-100)</option><option value="high">高浊 (>100)</option></select></div>
+                    <div class="param-row"><label>硬度 (CaCO₃)</label><select id="wt_hard"><option value="low">软水 (<100 mg/L)</option><option value="mid" selected>中硬 (100-300)</option><option value="high">高硬 (300-1000)</option><option value="vhigh">极高硬 (>1000)</option></select></div>
+                    <div class="param-row"><label>TDS等级</label><select id="wt_tds"><option value="low">低 (<500)</option><option value="mid" selected>中等 (500-2000)</option><option value="high">高 (2000-10000)</option><option value="vhigh">极高 (>10000)</option></select></div>
+                    <div class="param-row"><label>特殊离子</label><select id="wt_special"><option value="none">无特殊</option><option value="ironMn">铁/锰超标</option><option value="fluoride">氟超标</option></select></div>
+                    <div class="param-row"><label>用水标准</label><select id="wt_std"><option value="drink">生活饮用水 (GB5749)</option><option value="cooling">循环冷却水</option><option value="boiler">锅炉补给水</option><option value="ultrapure">实验室超纯水</option></select></div>
+                    <div id="waterWarning" class="warning" style="display:none;"></div>
+                    <button id="applyCustomWater" class="apply-btn">应用自定义参数 → 生成工艺</button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <h3 style="font-size:1.4rem;"><i class="fas fa-chalkboard-user"></i> 推荐给水处理工艺</h3>
+                <div id="waterResult">点击左侧典型场景或自定义参数</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        环境科学 | 水污染控制工程 | 王熙
+    </div>
+</div>
+
+<script>
+    // ===================================================================
+    //  废水场景库
+    // ===================================================================
+    const wastewaterScenarios = {
+        domestic: { name: "生活污水", cod: "mid", bc: "high", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "neutral", std: "grade1A", desc: "COD≈500-800, B/C>0.5, 无毒" },
+        alcohol:  { name: "酒精/酿酒废水", cod: "high", bc: "mid", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈8000-20000, B/C 0.4-0.6, 易酸败" },
+        dyeing:   { name: "印染废水", cod: "mid", bc: "low", nh3: "mid", tp: "mid", tox: "moderate", salt: "mid", ss: "high", oil: "low", ph: "alkaline", std: "grade1A", desc: "COD≈800-2000, B/C≈0.2-0.3, 色度高" },
+        pharma:   { name: "制药发酵废水", cod: "high", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "mid", ss: "high", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈5000-15000, B/C<0.3, 含抗生素, pH酸性" },
+        electroplating: { name: "电镀废水", cod: "low", bc: "low", nh3: "low", tp: "low", tox: "high", salt: "mid", ss: "mid", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈100-500, 含重金属(Cr/Ni/Cu/Zn), 无机为主, 强酸性" },
+        landfill: { name: "垃圾渗滤液(老龄)", cod: "high", bc: "low", nh3: "high", tp: "mid", tox: "moderate", salt: "high", ss: "mid", oil: "low", ph: "alkaline", std: "grade1A", desc: "COD≈3000-8000, B/C<0.2, 高氨氮(>1000 mg/L)" },
+        chemical: { name: "化工/农药废水", cod: "vhigh", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "high", ss: "mid", oil: "mid", ph: "acid", std: "grade1A", desc: "COD>10000, B/C<0.2, 高盐强毒" }
+    };
+
+    function renderWastewaterCards() {
+        const container = document.getElementById('wwCardList');
+        container.innerHTML = '';
+        for (const [key, val] of Object.entries(wastewaterScenarios)) {
+            const card = document.createElement('div');
+            card.className = 'scenario-card';
+            card.dataset.key = key;
+            card.innerHTML = `<h4>${val.name}<span class="tag" style="background:#d4eef5;font-size:0.65rem;">典型</span></h4><p>${val.desc}</p>`;
+            card.onclick = () => selectWastewater(key, card);
+            container.appendChild(card);
+        }
+    }
+
+    function selectWastewater(key, cardElem) {
+        const sc = wastewaterScenarios[key];
+        if (!sc) return;
+        document.querySelectorAll('#wwCardList .scenario-card').forEach(c => c.classList.remove('active'));
+        cardElem.classList.add('active');
+        document.getElementById('ww_cod').value = sc.cod;
+        document.getElementById('ww_bc').value = sc.bc;
+        document.getElementById('ww_nh3').value = sc.nh3;
+        document.getElementById('ww_tp').value = sc.tp;
+        document.getElementById('ww_tox').value = sc.tox;
+        document.getElementById('ww_salt').value = sc.salt;
+        document.getElementById('ww_ss').value = sc.ss;
+        document.getElementById('ww_oil').value = sc.oil;
+        document.getElementById('ww_ph').value = sc.ph || 'neutral';
+        document.getElementById('ww_std').value = sc.std;
+        generateWWRecommendation();
+    }
+
+    function generateWWRecommendation() {
+        const cod  = document.getElementById('ww_cod').value;
+        const bc   = document.getElementById('ww_bc').value;
+        const nh3  = document.getElementById('ww_nh3').value;
+        const tp   = document.getElementById('ww_tp').value;
+        const tox  = document.getElementById('ww_tox').value;
+        const salt = document.getElementById('ww_salt').value;
+        const ss   = document.getElementById('ww_ss').value;
+        const oil  = document.getElementById('ww_oil').value;
+        const ph   = document.getElementById('ww_ph').value;
+        const std  = document.getElementById('ww_std').value;
+
+        const isInorganicToxic = (cod === 'low' && bc === 'low' && tox === 'high');
+        const isHighCOD = (cod === 'high' || cod === 'vhigh');
+        const isLowBC   = (bc === 'low');
+        const isHighNH3 = (nh3 === 'high' || nh3 === 'vhigh');
+
+        // ======== 警告信息 ========
+        let warningParts = [];
+        if (tox === 'high' && bc !== 'low') warningParts.push('高毒性废水通常可生化性较差，您选择的B/C偏高，请复核实际水质。');
+        if (salt === 'high' && cod === 'low') warningParts.push('高盐低有机废水，生化处理困难，优先考虑物化+膜法。');
+        if (ph === 'acid' && tox !== 'high') warningParts.push('酸性废水需要中和预处理，否则可能抑制生化系统。');
+        if (bc === 'low' && tox === 'none') warningParts.push('B/C低但无毒性，可能是难降解有机物，推荐高级氧化或水解酸化预处理。');
+        if (isInorganicToxic) warningParts.push('以重金属/无机污染物为主，推荐化学沉淀+物化工艺路线，生化处理不适用。');
+        else if (ph === 'acid' && tox === 'high') warningParts.push('酸性含毒废水需先中和调节，重金属等毒性物质对生化系统有抑制作用。');
+
+        const warnDiv = document.getElementById('wwWarning');
+        if (warningParts.length > 0) {
+            warnDiv.style.display = 'block';
+            warnDiv.innerText = '⚠️ ' + warningParts.join('；');
+        } else {
+            warnDiv.style.display = 'none';
+        }
+
+        // ======== 预处理可选技术 ========
+        let preList = [];
+        if (ss === 'high') preList.push('格栅+沉砂池+初沉池 / 混凝沉淀');
+        else if (ss === 'mid') preList.push('初沉池/混凝沉淀');
+        if (oil === 'high') preList.push('高效隔油池+溶气气浮');
+        else if (oil === 'mid') preList.push('隔油池/气浮');
+
+        if (isInorganicToxic) {
+            preList.push('破氰处理（碱性氯化法，如含氰）');
+            preList.push('化学沉淀（除重金属离子：调pH至8.5-9.5投加石灰/苛性钠）');
+        } else {
+            if (tox === 'high' || (cod !== 'low' && bc === 'low')) preList.push('高级氧化预处理（芬顿/臭氧）');
+        }
+        if (salt === 'high') preList.push('机械蒸汽再压缩(MVR)蒸发 或 膜法脱盐');
+        if (nh3 === 'vhigh') preList.push('氨氮吹脱塔/汽提');
+        if (tp === 'vhigh') preList.push('化学沉淀除磷(石灰/铁盐)');
+        if (ph === 'acid') preList.push('中和调节池（加碱）');
+        if (ph === 'alkaline') preList.push('中和调节池（加酸）');
+        if (preList.length === 0) preList.push('格栅+调节池');
+
+        // ======== 生化处理可选技术（核心扩充部分） ========
+        let bioList = [];
+
+        if (isInorganicToxic) {
+            bioList.push('⚠️ 以物化/化学处理为主，生化处理不适用');
+        } else {
+            // ---- 厌氧/水解酸化段 ----
+            if (isHighCOD && !isLowBC) {
+                // 高浓度易生化 → 高效厌氧
+                if (cod === 'vhigh') bioList.push('膨胀颗粒污泥床(EGSB)/内循环(IC)厌氧反应器');
+                else bioList.push('升流式厌氧污泥床(UASB)厌氧反应器');
+            } else if (cod === 'mid' && bc === 'mid') {
+                bioList.push('水解酸化+好氧工艺');
+            } else if (isLowBC && isHighCOD && tox !== 'low') {
+                // 难降解+高浓度：水解酸化改善可生化性
+                bioList.push('水解酸化（提高B/C，为后续生化创造条件）');
+            }
+
+            // ---- 好氧主工艺 ----
+            const needDenit = (std !== 'grade1B');
+            const needPhos  = (tp !== 'low' || std === 'grade1A' || std === 'reuse');
+            let mainAerobic = '';
+            if (needDenit && needPhos) mainAerobic = '厌氧-缺氧-好氧(AAO)工艺（脱氮除磷）';
+            else if (needDenit)         mainAerobic = '缺氧-好氧(AO)工艺（脱氮）';
+            else                        mainAerobic = '好氧活性污泥法 / 接触氧化';
+            bioList.push(mainAerobic);
+
+            // ---- 低浓度易生化废水（生活污水类）增加多工艺选项 ----
+            if (cod === 'mid' && bc === 'high' && tox === 'none') {
+                bioList.push('序批式活性污泥法(SBR)');
+                bioList.push('循环活性污泥工艺(CASS)');
+                bioList.push('氧化沟');
+                bioList.push('膜生物反应器(MBR) —— 膜分离代替二沉池，出水水质好');
+            }
+
+            // ---- 中高浓度/中盐度 → 填料强化 ----
+            if (isHighCOD || salt === 'mid' || salt === 'high') {
+                bioList.push('移动床生物膜反应器(MBBR)/悬浮填料(IFAS)强化处理能力');
+            }
+
+            // ---- 高毒性 → 耐毒组合 ----
+            if (tox === 'high') {
+                bioList.unshift('水解酸化+膨胀颗粒污泥床(EGSB)+厌氧-缺氧-好氧(AAO)（耐毒组合）');
+            }
+
+            // ---- 高氨氮 + 低碳源 → 新型脱氮工艺 ----
+            if (isHighNH3 && isLowBC) {
+                bioList.push('短程硝化反硝化（节省碳源和曝气量）');
+                bioList.push('厌氧氨氧化(Anammox) —— 无需有机碳源，适合老龄渗滤液');
+            }
+
+            // ---- 中等浓度通用好氧生物膜法 ----
+            if (cod !== 'low' && cod !== 'vhigh') {
+                bioList.push('生物接触氧化工艺（生物膜法，耐冲击负荷）');
+            }
+        }
+
+        // ======== 深度处理可选技术 ========
+        let deepList = [];
+        if (isInorganicToxic) {
+            if (std === 'reuse') {
+                deepList.push('离子交换（除残余重金属）');
+                deepList.push('反渗透(RO)回用');
+                deepList.push('蒸发结晶（零排放）');
+            } else {
+                deepList.push('砂滤/多介质过滤');
+                deepList.push('离子交换（除残余重金属离子）');
+                deepList.push('混凝沉淀进一步除重金属');
+            }
+            deepList.push('次氯酸钠/紫外消毒');
+        } else if (std === 'reuse') {
+            deepList.push('超滤(UF) + 反渗透(RO) 回用');
+            deepList.push('紫外线/臭氧消毒');
+        } else {
+            if (cod !== 'low') deepList.push('芬顿/臭氧高级氧化 + 曝气生物滤池(BAF)');
+            else               deepList.push('高效沉淀池 + 滤布滤池');
+            if (std !== 'grade1B') deepList.push('反硝化深床滤池');
+            if (tp !== 'low' || std === 'grade1A') deepList.push('混凝沉淀化学除磷（聚合氯化铝/聚合硫酸铁）');
+            deepList.push('次氯酸钠/紫外消毒');
+        }
+        if (bc === 'low' && !isInorganicToxic) deepList.push('活性炭吸附/臭氧脱色');
+
+        // ======== 推荐组合示例 ========
+        let comboExample = '';
+        if (isInorganicToxic) {
+            comboExample = '🔹 破氰 → 中和调节 → 化学沉淀（重金属）→ 混凝沉淀 → 砂滤 → 离子交换';
+        } else if (tox === 'high') {
+            comboExample = '🔹 高级氧化 → 水解酸化 → 膨胀颗粒污泥床(EGSB) → 厌氧-缺氧-好氧(AAO) → 曝气生物滤池(BAF) → 消毒';
+        } else if (cod === 'high') {
+            comboExample = '🔹 调节池 → 升流式厌氧污泥床(UASB) → 厌氧-缺氧-好氧(AAO) → 二沉 → 深度混凝 → 过滤 → 消毒';
+        } else if (cod === 'mid' && bc === 'high' && tox === 'none') {
+            comboExample = '🔹 格栅 → 沉砂 → 厌氧-缺氧-好氧(AAO) → 深度过滤 → 紫外线消毒';
+        } else {
+            comboExample = '🔹 混凝沉淀 → 接触氧化 → 二沉 → 高效沉淀 → 滤布滤池 → 消毒';
+        }
+
+        // ======== 水质概要 ========
+        const codText  = { low:"<500 mg/L", mid:"500-2000", high:"2000-10000", vhigh:">10000" }[cod];
+        const bcText   = { low:"<0.3（难生化）", mid:"0.3-0.5（一般）", high:">0.5（易生化）" }[bc];
+        const nh3Text  = { low:"<50", mid:"50-500", high:"500-2000", vhigh:">2000" }[nh3];
+        const tpText   = { low:"<5", mid:"5-50", high:"50-200", vhigh:">200" }[tp];
+        const toxText  = { none:"无毒性", moderate:"中等毒性", high:"高毒性/难降解" }[tox];
+        const saltText = { low:"低盐(<2000)", mid:"中盐(2000-10000)", high:"高盐(>10000)" }[salt];
+        const phText   = { acid:"酸性 (<6.5)", neutral:"中性 (6.5-8.5)", alkaline:"碱性 (>8.5)" }[ph];
+
+        const outputDiv = document.getElementById('wwResult');
+        outputDiv.innerHTML = `
+            <div class="indicator"><strong>📋 当前水质指标范围</strong><br>
+            COD: ${codText} &nbsp;|&nbsp; B/C: ${bcText} &nbsp;|&nbsp; NH₃-N: ${nh3Text} mg/L<br>
+            TP: ${tpText} mg/L &nbsp;|&nbsp; 毒性: ${toxText} &nbsp;|&nbsp; 盐分: ${saltText}<br>
+            SS: ${ss==='high'?'高':(ss==='mid'?'中等':'低')} &nbsp;|&nbsp; pH: ${phText} &nbsp;|&nbsp; 排放标准: ${std}</div>
+            <div class="process-block block-pre" style="border-left-color:#1565c0; background:#e3f2fd"><h4 style="color:#1565c0;">🛠️ 预处理可选技术</h4><div class="tech-list">${preList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="process-block block-bio" style="border-left-color:#2e7d32; background:#e8f5e9"><h4 style="color:#2e7d32;">🧬 生化处理可选技术</h4><div class="tech-list">${bioList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="process-block block-deep" style="border-left-color:#e65100; background:#fff3e0"><h4 style="color:#e65100;">⚡ 深度处理可选技术</h4><div class="tech-list">${deepList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="rec-combo"><strong>🌟 推荐组合示例</strong> ${comboExample}</div>
+        `;
+    }
+
+    // ===================================================================
+    //  给水场景库（锅炉合并为一个，新增冷却水，保留超纯水/海水）
+    // ===================================================================
+    const waterScenarios = {
+        surface_drink: { name: "地表水(饮用水)", source: "surface", turb: "mid", hard: "low", tds: "low", special: "none", std: "drink", desc: "浊度5-100NTU，可能含藻类" },
+        ground_drink:  { name: "地下水(饮用水)", source: "ground", turb: "low", hard: "mid", tds: "mid", special: "none", std: "drink", desc: "低浊，硬度或氟可能超标" },
+        cooling_water: { name: "循环冷却水", source: "surface", turb: "mid", hard: "high", tds: "mid", special: "none", std: "cooling", desc: "中浊度，高硬（结垢风险），需阻垢缓蚀杀菌" },
+        boiler:        { name: "锅炉补给水", source: "surface", turb: "low", hard: "high", tds: "mid", special: "none", std: "boiler", desc: "需软化、除盐、除硅" },
+        ultrapure:     { name: "实验室超纯水", source: "surface", turb: "low", hard: "low", tds: "low", special: "none", std: "ultrapure", desc: "电阻率≥18MΩ·cm" },
+        seawater:      { name: "海水淡化", source: "seawater", turb: "low", hard: "vhigh", tds: "vhigh", special: "none", std: "drink", desc: "高TDS(>35000 mg/L)" }
+    };
+
+    function renderWaterCards() {
+        const container = document.getElementById('waterCardList');
+        container.innerHTML = '';
+        for (const [key, val] of Object.entries(waterScenarios)) {
+            const card = document.createElement('div');
+            card.className = 'scenario-card';
+            card.innerHTML = `<h4>${val.name}<span class="tag" style="background:#d4eef5;">典型</span></h4><p>${val.desc}</p>`;
+            card.onclick = () => selectWater(key, card);
+            container.appendChild(card);
+        }
+    }
+
+    function selectWater(key, cardElem) {
+        const sc = waterScenarios[key];
+        if (!sc) return;
+        document.querySelectorAll('#waterCardList .scenario-card').forEach(c => c.classList.remove('active'));
+        cardElem.classList.add('active');
+        document.getElementById('wt_source').value = sc.source;
+        document.getElementById('wt_turb').value = sc.turb || 'mid';
+        document.getElementById('wt_hard').value = sc.hard;
+        document.getElementById('wt_tds').value = sc.tds;
+        document.getElementById('wt_special').value = sc.special || 'none';
+        document.getElementById('wt_std').value = sc.std;
+        generateWaterRecommendation();
+    }
+
+    function generateWaterRecommendation() {
+        const source  = document.getElementById('wt_source').value;
+        const turb    = document.getElementById('wt_turb').value;
+        const hard    = document.getElementById('wt_hard').value;
+        const tds     = document.getElementById('wt_tds').value;
+        const special = document.getElementById('wt_special').value;
+        const std     = document.getElementById('wt_std').value;
+
+        const isCooling = (std === 'cooling');
+
+        // 中文映射
+        const sourceText = { surface:"地表水", ground:"地下水", brackish:"苦咸水", seawater:"海水" };
+        const turbText   = { low:"低浊", mid:"中浊", high:"高浊" };
+        const hardText   = { low:"软水", mid:"中硬", high:"高硬", vhigh:"极高硬" };
+        const stdText    = { drink:"生活饮用水", cooling:"循环冷却水", boiler:"锅炉补给水", ultrapure:"实验室超纯水" };
+
+        // ======== 预处理 ========
+        let preList = [];
+        if (isCooling) {
+            if (turb === 'high') preList.push('混凝+斜管沉淀+砂滤');
+            else if (turb === 'mid') preList.push('混凝沉淀+砂滤');
+            else preList.push('微滤/直接过滤');
+            if (hard === 'high' || hard === 'vhigh') preList.push('钠离子交换软化 / 石灰软化（防结垢）');
+            if (special === 'ironMn') preList.push('曝气+锰砂过滤（除铁锰）');
+            if (special === 'fluoride') preList.push('活性氧化铝除氟');
+        } else {
+            if (turb === 'high') preList.push('混凝+斜管沉淀+砂滤');
+            else if (turb === 'mid') preList.push('混凝沉淀+砂滤');
+            else preList.push('微滤/直接过滤');
+            if (special === 'ironMn') preList.push('曝气+锰砂过滤（除铁锰）');
+            if (special === 'fluoride') preList.push('活性氧化铝/羟基磷灰石除氟');
+            if (hard === 'high' || hard === 'vhigh') preList.push('钠离子交换软化 / 石灰软化');
+        }
+
+        // ======== 深度/精处理 ========
+        let deepList = [];
+        let comboExample = '';
+
+        if (isCooling) {
+            deepList = [
+                '阻垢剂投加（控制结垢）',
+                '缓蚀剂投加（控制腐蚀）',
+                '杀菌灭藻（氯/臭氧/紫外线/季铵盐）',
+                '旁流过滤（去除悬浮物和生物膜碎片）'
+            ];
+            if (tds === 'high' || tds === 'vhigh') {
+                deepList.push('反渗透(RO)脱盐（降低浓缩倍数）');
+            }
+            comboExample = '🔹 混凝沉淀→砂滤→软化→阻垢缓蚀→杀菌灭藻→旁流过滤';
+        } else if (std === 'drink') {
+            if (tds === 'high' || tds === 'vhigh') deepList.push('反渗透(RO)改善口感');
+            deepList.push('活性炭过滤（除余氯/有机物）');
+            deepList.push('紫外线/氯消毒');
+            if (source === 'seawater') deepList = ['海水反渗透(SWRO)', '矿化调节', '紫外线消毒'];
+            if (source === 'brackish') deepList = ['苦咸水反渗透(BWRO)', '加药阻垢'];
+            comboExample = '🔹 混凝→沉淀→砂滤→活性炭→消毒';
+        } else if (std === 'boiler') {
+            deepList.push('反渗透(RO) 或 电渗析(ED)');
+            deepList.push('混床离子交换');
+            deepList.push('除二氧化硅特殊树脂');
+            comboExample = '🔹 多介质过滤→活性炭→反渗透(RO)→混床离子交换→除硅';
+        } else if (std === 'ultrapure') {
+            deepList.push('二级反渗透(RO) + 电渗析+离子交换 + 混合离子交换柱精除盐');
+            deepList.push('总有机碳(TOC)脱除器');
+            comboExample = '🔹 多介质过滤→活性炭→软化→二级反渗透(RO)→电渗析+离子交换→混合离子交换柱精除盐';
+        } else {
+            deepList.push('多介质过滤 + 活性炭');
+            comboExample = '🔹 根据水质组合：预处理 + 深度处理';
+        }
+
+        // ======== 提示信息 ========
+        const tdsText = { low:"<500", mid:"500-2000", high:"2000-10000", vhigh:">10000" }[tds];
+        const warnDiv = document.getElementById('waterWarning');
+        if (isCooling) {
+            warnDiv.style.display = 'block';
+            warnDiv.innerText = '💡 循环冷却水以阻垢/缓蚀/杀菌为主，不要求达到饮用水标准，注重水质稳定性。';
+        } else if (source === 'seawater' && std !== 'drink') {
+            warnDiv.style.display = 'block';
+            warnDiv.innerText = '⚠️ 海水淡化通常用于饮用水或工业用水，标准请核对';
+        } else {
+            warnDiv.style.display = 'none';
+        }
+
+        const outputDiv = document.getElementById('waterResult');
+        outputDiv.innerHTML = `
+            <div class="indicator"><strong>💧 水源概要</strong><br>
+            水源: ${sourceText[source] || source} &nbsp;|&nbsp; 浊度: ${turbText[turb] || turb} &nbsp;|&nbsp; 硬度: ${hardText[hard] || hard}<br>
+            总溶解固体(TDS): ${tdsText} mg/L &nbsp;|&nbsp; 用水标准: ${stdText[std] || std}</div>
+            <div class="process-block block-pre" style="border-left-color:#1565c0; background:#e3f2fd"><h4 style="color:#1565c0;">预处理可选技术</h4><div class="tech-list">${preList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="process-block block-deep" style="border-left-color:#e65100; background:#fff3e0"><h4 style="color:#e65100;">深度/精处理可选技术</h4><div class="tech-list">${deepList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="rec-combo"><strong>🌟 推荐组合示例</strong> ${comboExample}</div>
+        `;
+    }
+
+    // ===================================================================
+    //  事件绑定 & 初始化
+    // ===================================================================
+    document.getElementById('applyCustomWW').addEventListener('click', () => {
+        generateWWRecommendation();
+        document.querySelectorAll('#wwCardList .scenario-card').forEach(c => c.classList.remove('active'));
+    });
+    document.getElementById('applyCustomWater').addEventListener('click', () => {
+        generateWaterRecommendation();
+        document.querySelectorAll('#waterCardList .scenario-card').forEach(c => c.classList.remove('active'));
+    });
+
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const panels = { wastewater: document.getElementById('wastewaterPanel'), water: document.getElementById('waterPanel') };
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            modeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panels.wastewater.classList.remove('active');
+            panels.water.classList.remove('active');
+            if (mode === 'wastewater') panels.wastewater.classList.add('active');
+            else panels.water.classList.add('active');
+        });
+    });
+
+    renderWastewaterCards();
+    renderWaterCards();
+    const firstWasteCard = document.querySelector('#wwCardList .scenario-card');
+    if (firstWasteCard) selectWastewater('domestic', firstWasteCard);
+    const firstWaterCard = document.querySelector('#waterCardList .scenario-card');
+    if (firstWaterCard) selectWater('surface_drink', firstWaterCard);
+</script>
+</body>
+</html>
