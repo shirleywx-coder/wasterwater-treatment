@@ -203,6 +203,13 @@
         .block-pre  .tech-item { background:#e3f2fd; border-color:#90caf9; }
         .block-bio  .tech-item { background:#e8f5e9; border-color:#a5d6a7; }
         .block-deep .tech-item { background:#fff3e0; border-color:#ffcc80; }
+        .purpose-note {
+            font-size: 0.88rem;
+            color: #156372;
+            margin-bottom: 12px;
+            padding: 6px 0 8px;
+            border-bottom: 1px dashed #cde2ec;
+        }
         .rec-combo {
             background: #ebf6fa;
             padding: 12px 15px;
@@ -230,6 +237,54 @@
             .param-row { flex-wrap: wrap; }
             .param-row label { width: 100%; margin-bottom: 4px; }
         }
+
+        /* 参考图面板 */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            margin-top: 4px;
+        }
+        .ref-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px 16px 16px;
+            border-left: 5px solid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .ref-card h4 {
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ref-card .pollutant-example {
+            font-size: 0.78rem;
+            color: #666;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .ref-card .tech-tag {
+            display: inline-block;
+            font-size: 0.82rem;
+            padding: 3px 12px;
+            border-radius: 30px;
+            margin: 3px 4px 3px 0;
+            background: #eef3f7;
+            border: 1px solid #d5dde3;
+            color: #1a4f5e;
+        }
+        .ref-intro {
+            background: #e8f0fe;
+            border-left: 5px solid #1565c0;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            color: #1a3a4a;
+        }
     </style>
 </head>
 <body>
@@ -240,12 +295,13 @@
     </div>
 
     <div class="mode-tabs">
-        <button class="mode-btn active" data-mode="wastewater">🏭 废水处理工艺</button>
+        <button class="mode-btn active" data-mode="reference">📖 水污染控制技术分类</button>
         <button class="mode-btn" data-mode="water">💧 给水处理工艺</button>
+        <button class="mode-btn" data-mode="wastewater">🏭 废水处理工艺</button>
     </div>
 
     <!-- ===== 废水模块 ===== -->
-    <div id="wastewaterPanel" class="mode-panel active">
+    <div id="wastewaterPanel" class="mode-panel">
         <div class="row">
             <div class="left-panel">
                 <h3 style="font-size:1.1rem; margin-bottom:0.8rem;"><i class="fas fa-industry"></i> 典型废水场景</h3>
@@ -261,6 +317,8 @@
                     <div class="param-row"><label>悬浮物 SS</label><select id="ww_ss"><option value="low">较低 (<200)</option><option value="mid" selected>中等 (200-1000)</option><option value="high">高 (>1000)</option></select></div>
                     <div class="param-row"><label>油类含量</label><select id="ww_oil"><option value="low">低 (<20)</option><option value="mid" selected>中等 (20-200)</option><option value="high">高 (>200)</option></select></div>
                     <div class="param-row"><label>pH等级</label><select id="ww_ph"><option value="acid">酸性 (<6.5)</option><option value="neutral" selected>中性 (6.5-8.5)</option><option value="alkaline">碱性 (>8.5)</option></select></div>
+                    <div class="param-row"><label>重金属</label><select id="ww_hm"><option value="none" selected>无</option><option value="present">有超标</option><option value="severe">严重超标</option></select></div>
+                    <div class="param-row"><label>色度/嗅味</label><select id="ww_color"><option value="none" selected>无色无味</option><option value="mild">轻度</option><option value="obvious">明显</option></select></div>
                     <div class="param-row"><label>排放标准</label><select id="ww_std"><option value="grade1A" selected>一级A (GB18918)</option><option value="grade1B">一级B</option><option value="reuse">再生回用</option></select></div>
                     <div id="wwWarning" class="warning" style="display:none;"></div>
                     <button id="applyCustomWW" class="apply-btn">应用自定义参数 → 生成工艺</button>
@@ -298,6 +356,114 @@
         </div>
     </div>
 
+    <!-- ===== 参考图面板 ===== -->
+    <div id="referencePanel" class="mode-panel active">
+        <div class="ref-intro">
+            <strong>📖 污染物类型 → 对应去除技术</strong>
+            —— 理解不同类型污染物适合哪些处理技术，是进行工艺比选的前提。
+            以下按污染物类别整理常用技术，点击右侧"废水处理工艺"或"给水处理工艺"即可结合具体场景进行比选。
+        </div>
+        <div class="ref-grid">
+            <div class="ref-card" style="border-left-color:#5c6bc0;">
+                <h4>🪨 悬浮颗粒物（SS）</h4>
+                <div class="pollutant-example">泥沙、悬浮固体、纤维、纸浆</div>
+                <span class="tech-tag">格栅/筛网</span>
+                <span class="tech-tag">沉砂池</span>
+                <span class="tech-tag">沉淀池</span>
+                <span class="tech-tag">斜管/斜板沉淀</span>
+                <span class="tech-tag">混凝沉淀</span>
+                <span class="tech-tag">气浮</span>
+                <span class="tech-tag">砂滤/多介质过滤</span>
+                <span class="tech-tag">微滤(MF)</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#42a5f5;">
+                <h4>🧪 胶体颗粒物</h4>
+                <div class="pollutant-example">黏土胶体、乳化油、蛋白质胶体</div>
+                <span class="tech-tag">混凝（PAC/PFS/铝盐/铁盐）</span>
+                <span class="tech-tag">絮凝（PAM助凝）</span>
+                <span class="tech-tag">沉淀</span>
+                <span class="tech-tag">砂滤</span>
+                <span class="tech-tag">超滤(UF)</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#26a69a;">
+                <h4>🧫 溶解性有机物（BOD/COD）</h4>
+                <div class="pollutant-example">生活污水有机物、工业有机废水、腐殖酸</div>
+                <span class="tech-tag">好氧活性污泥法</span>
+                <span class="tech-tag">序批式(SBR)</span>
+                <span class="tech-tag">生物接触氧化</span>
+                <span class="tech-tag">膜生物反应器(MBR)</span>
+                <span class="tech-tag">升流式厌氧污泥床(UASB)</span>
+                <span class="tech-tag">膨胀颗粒污泥床(EGSB)</span>
+                <span class="tech-tag">活性炭吸附</span>
+                <span class="tech-tag">芬顿/臭氧高级氧化</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#ef5350;">
+                <h4>💨 含氮化合物（NH₃-N、NO₃⁻）</h4>
+                <div class="pollutant-example">生活污水氨氮、垃圾渗滤液高氨氮、工业含氮废水</div>
+                <span class="tech-tag">硝化反硝化（AAO/AO）</span>
+                <span class="tech-tag">短程硝化反硝化</span>
+                <span class="tech-tag">厌氧氨氧化(Anammox)</span>
+                <span class="tech-tag">氨氮吹脱/汽提</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#ab47bc;">
+                <h4>🧬 含磷化合物（TP）</h4>
+                <div class="pollutant-example">生活污水磷酸盐、含磷工业废水</div>
+                <span class="tech-tag">生物除磷（PAO聚磷菌）</span>
+                <span class="tech-tag">化学沉淀（石灰/铝盐/铁盐）</span>
+                <span class="tech-tag">混凝沉淀除磷(PAC/PFS)</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#ff7043;">
+                <h4>☠️ 重金属离子</h4>
+                <div class="pollutant-example">Cr、Ni、Cu、Zn、Pb、Cd、Hg</div>
+                <span class="tech-tag">化学沉淀（调pH至8.5-9.5）</span>
+                <span class="tech-tag">混凝沉淀</span>
+                <span class="tech-tag">离子交换树脂</span>
+                <span class="tech-tag">反渗透(RO)</span>
+                <span class="tech-tag">电渗析</span>
+                <span class="tech-tag">电絮凝/电解</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#78909c;">
+                <h4>🧂 溶解性盐类（TDS/盐分）</h4>
+                <div class="pollutant-example">NaCl、CaSO₄、高盐工业废水、海水</div>
+                <span class="tech-tag">反渗透(RO)</span>
+                <span class="tech-tag">电渗析(ED)</span>
+                <span class="tech-tag">机械蒸汽再压缩(MVR)蒸发</span>
+                <span class="tech-tag">多效蒸发(MED)</span>
+                <span class="tech-tag">离子交换（除盐）</span>
+                <span class="tech-tag">电吸附(CDI)</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#8d6e63;">
+                <h4>⛽ 油类</h4>
+                <div class="pollutant-example">浮油、乳化油、溶解油</div>
+                <span class="tech-tag">隔油池（API/CPI）</span>
+                <span class="tech-tag">溶气气浮(DAF)</span>
+                <span class="tech-tag">破乳（化学+气浮）</span>
+                <span class="tech-tag">超滤(UF)膜分离</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#66bb6a;">
+                <h4>🦠 病原微生物</h4>
+                <div class="pollutant-example">细菌、病毒、原生动物胞囊</div>
+                <span class="tech-tag">氯消毒（注意：与有机物反应生成三卤甲烷等消毒副产物）</span>
+                <span class="tech-tag">紫外线(UV)消毒</span>
+                <span class="tech-tag">臭氧消毒</span>
+                <span class="tech-tag">超滤(UF)</span>
+                <span class="tech-tag">反渗透(RO)</span>
+            </div>
+            <div class="ref-card" style="border-left-color:#fdd835; color:#333;">
+                <h4>🎨 色度/嗅味</h4>
+                <div class="pollutant-example">印染废水色度、腐殖酸色度、藻类异味</div>
+                <span class="tech-tag">活性炭吸附</span>
+                <span class="tech-tag">臭氧氧化</span>
+                <span class="tech-tag">芬顿高级氧化</span>
+                <span class="tech-tag">混凝脱色</span>
+                <span class="tech-tag">纳滤(NF)</span>
+            </div>
+        </div>
+        <div style="text-align:center; font-size:0.8rem; color:#456d7a; margin-top:18px; padding:10px;">
+            💡 工艺比选原则：先明确目标污染物 → 匹配适用技术 → 考虑水质水量和经济性 → 组合成完整工艺链
+        </div>
+    </div>
+
     <div class="footer">
         环境科学 | 水污染控制工程 | 王熙
     </div>
@@ -308,13 +474,13 @@
     //  废水场景库
     // ===================================================================
     const wastewaterScenarios = {
-        domestic: { name: "生活污水", cod: "mid", bc: "high", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "neutral", std: "grade1A", desc: "COD≈500-800, B/C>0.5, 无毒" },
-        alcohol:  { name: "酒精/酿酒废水", cod: "high", bc: "mid", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈8000-20000, B/C 0.4-0.6, 易酸败" },
-        dyeing:   { name: "印染废水", cod: "mid", bc: "low", nh3: "mid", tp: "mid", tox: "moderate", salt: "mid", ss: "high", oil: "low", ph: "alkaline", std: "grade1A", desc: "COD≈800-2000, B/C≈0.2-0.3, 色度高" },
-        pharma:   { name: "制药发酵废水", cod: "high", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "mid", ss: "high", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈5000-15000, B/C<0.3, 含抗生素, pH酸性" },
-        electroplating: { name: "电镀废水", cod: "low", bc: "low", nh3: "low", tp: "low", tox: "high", salt: "mid", ss: "mid", oil: "low", ph: "acid", std: "grade1A", desc: "COD≈100-500, 含重金属(Cr/Ni/Cu/Zn), 无机为主, 强酸性" },
-        landfill: { name: "垃圾渗滤液(老龄)", cod: "high", bc: "low", nh3: "high", tp: "mid", tox: "moderate", salt: "high", ss: "mid", oil: "low", ph: "alkaline", std: "grade1A", desc: "COD≈3000-8000, B/C<0.2, 高氨氮(>1000 mg/L)" },
-        chemical: { name: "化工/农药废水", cod: "vhigh", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "high", ss: "mid", oil: "mid", ph: "acid", std: "grade1A", desc: "COD>10000, B/C<0.2, 高盐强毒" }
+        domestic: { name: "生活污水", cod: "mid", bc: "high", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "neutral", hm: "none", color: "none", std: "grade1A", desc: "COD≈500-800, B/C>0.5, 无毒" },
+        alcohol:  { name: "酒精/酿酒废水", cod: "high", bc: "mid", nh3: "mid", tp: "mid", tox: "none", salt: "low", ss: "mid", oil: "low", ph: "acid", hm: "none", color: "mild", std: "grade1A", desc: "COD≈8000-20000, B/C 0.4-0.6, 易酸败" },
+        dyeing:   { name: "印染废水", cod: "mid", bc: "low", nh3: "mid", tp: "mid", tox: "moderate", salt: "mid", ss: "high", oil: "low", ph: "alkaline", hm: "present", color: "obvious", std: "grade1A", desc: "COD≈800-2000, B/C≈0.2-0.3, 色度高" },
+        pharma:   { name: "制药发酵废水", cod: "high", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "mid", ss: "high", oil: "low", ph: "acid", hm: "present", color: "mild", std: "grade1A", desc: "COD≈5000-15000, B/C<0.3, 含抗生素, pH酸性" },
+        electroplating: { name: "电镀废水", cod: "low", bc: "low", nh3: "low", tp: "low", tox: "high", salt: "mid", ss: "mid", oil: "low", ph: "acid", hm: "severe", color: "none", std: "grade1A", desc: "COD≈100-500, 含重金属(Cr/Ni/Cu/Zn), 无机为主, 强酸性" },
+        landfill: { name: "垃圾渗滤液(老龄)", cod: "high", bc: "low", nh3: "high", tp: "mid", tox: "moderate", salt: "high", ss: "mid", oil: "low", ph: "alkaline", hm: "present", color: "obvious", std: "grade1A", desc: "COD≈3000-8000, B/C<0.2, 高氨氮(>1000 mg/L)" },
+        chemical: { name: "化工/农药废水", cod: "vhigh", bc: "low", nh3: "mid", tp: "mid", tox: "high", salt: "high", ss: "mid", oil: "mid", ph: "acid", hm: "severe", color: "obvious", std: "grade1A", desc: "COD>10000, B/C<0.2, 高盐强毒" }
     };
 
     function renderWastewaterCards() {
@@ -344,6 +510,8 @@
         document.getElementById('ww_ss').value = sc.ss;
         document.getElementById('ww_oil').value = sc.oil;
         document.getElementById('ww_ph').value = sc.ph || 'neutral';
+        document.getElementById('ww_hm').value = sc.hm || 'none';
+        document.getElementById('ww_color').value = sc.color || 'none';
         document.getElementById('ww_std').value = sc.std;
         generateWWRecommendation();
     }
@@ -358,12 +526,16 @@
         const ss   = document.getElementById('ww_ss').value;
         const oil  = document.getElementById('ww_oil').value;
         const ph   = document.getElementById('ww_ph').value;
+        const hm   = document.getElementById('ww_hm').value;    // 重金属
+        const color = document.getElementById('ww_color').value; // 色度/嗅味
         const std  = document.getElementById('ww_std').value;
 
         const isInorganicToxic = (cod === 'low' && bc === 'low' && tox === 'high');
         const isHighCOD = (cod === 'high' || cod === 'vhigh');
         const isLowBC   = (bc === 'low');
         const isHighNH3 = (nh3 === 'high' || nh3 === 'vhigh');
+        const hasHeavyMetal = (hm === 'present' || hm === 'severe');
+        const hasColor = (color !== 'none');
 
         // ======== 警告信息 ========
         let warningParts = [];
@@ -394,6 +566,10 @@
             preList.push('化学沉淀（除重金属离子：调pH至8.5-9.5投加石灰/苛性钠）');
         } else {
             if (tox === 'high' || (cod !== 'low' && bc === 'low')) preList.push('高级氧化预处理（芬顿/臭氧）');
+        }
+        // 非无机废水中的重金属单独处理
+        if (hasHeavyMetal && !isInorganicToxic) {
+            preList.push('化学沉淀（除重金属离子）');
         }
         if (salt === 'high') preList.push('机械蒸汽再压缩(MVR)蒸发 或 膜法脱盐');
         if (nh3 === 'vhigh') preList.push('氨氮吹脱塔/汽提');
@@ -483,6 +659,11 @@
             deepList.push('次氯酸钠/紫外消毒');
         }
         if (bc === 'low' && !isInorganicToxic) deepList.push('活性炭吸附/臭氧脱色');
+        // 色度/嗅味单独处理
+        if (hasColor) {
+            if (color === 'obvious') deepList.push('混凝脱色（PAC/PFS）');
+            deepList.push('活性炭吸附（除色度/异味）');
+        }
 
         // ======== 推荐组合示例 ========
         let comboExample = '';
@@ -499,20 +680,23 @@
         }
 
         // ======== 水质概要 ========
-        const codText  = { low:"<500 mg/L", mid:"500-2000", high:"2000-10000", vhigh:">10000" }[cod];
-        const bcText   = { low:"<0.3（难生化）", mid:"0.3-0.5（一般）", high:">0.5（易生化）" }[bc];
-        const nh3Text  = { low:"<50", mid:"50-500", high:"500-2000", vhigh:">2000" }[nh3];
-        const tpText   = { low:"<5", mid:"5-50", high:"50-200", vhigh:">200" }[tp];
-        const toxText  = { none:"无毒性", moderate:"中等毒性", high:"高毒性/难降解" }[tox];
-        const saltText = { low:"低盐(<2000)", mid:"中盐(2000-10000)", high:"高盐(>10000)" }[salt];
-        const phText   = { acid:"酸性 (<6.5)", neutral:"中性 (6.5-8.5)", alkaline:"碱性 (>8.5)" }[ph];
+        const codText   = { low:"<500 mg/L", mid:"500-2000", high:"2000-10000", vhigh:">10000" }[cod];
+        const bcText    = { low:"<0.3（难生化）", mid:"0.3-0.5（一般）", high:">0.5（易生化）" }[bc];
+        const nh3Text   = { low:"<50", mid:"50-500", high:"500-2000", vhigh:">2000" }[nh3];
+        const tpText    = { low:"<5", mid:"5-50", high:"50-200", vhigh:">200" }[tp];
+        const toxText   = { none:"无毒性", moderate:"中等毒性", high:"高毒性/难降解" }[tox];
+        const saltText  = { low:"低盐(<2000)", mid:"中盐(2000-10000)", high:"高盐(>10000)" }[salt];
+        const phText    = { acid:"酸性 (<6.5)", neutral:"中性 (6.5-8.5)", alkaline:"碱性 (>8.5)" }[ph];
+        const hmText    = { none:"无", present:"有超标", severe:"严重超标" }[hm];
+        const colorText = { none:"无色无味", mild:"轻度", obvious:"明显" }[color];
 
         const outputDiv = document.getElementById('wwResult');
         outputDiv.innerHTML = `
             <div class="indicator"><strong>📋 当前水质指标范围</strong><br>
             COD: ${codText} &nbsp;|&nbsp; B/C: ${bcText} &nbsp;|&nbsp; NH₃-N: ${nh3Text} mg/L<br>
             TP: ${tpText} mg/L &nbsp;|&nbsp; 毒性: ${toxText} &nbsp;|&nbsp; 盐分: ${saltText}<br>
-            SS: ${ss==='high'?'高':(ss==='mid'?'中等':'低')} &nbsp;|&nbsp; pH: ${phText} &nbsp;|&nbsp; 排放标准: ${std}</div>
+            SS: ${ss==='high'?'高':(ss==='mid'?'中等':'低')} &nbsp;|&nbsp; pH: ${phText}<br>
+            重金属: ${hmText} &nbsp;|&nbsp; 色度/嗅味: ${colorText} &nbsp;|&nbsp; 排放标准: ${std}</div>
             <div class="process-block block-pre" style="border-left-color:#1565c0; background:#e3f2fd"><h4 style="color:#1565c0;">🛠️ 预处理可选技术</h4><div class="tech-list">${preList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
             <div class="process-block block-bio" style="border-left-color:#2e7d32; background:#e8f5e9"><h4 style="color:#2e7d32;">🧬 生化处理可选技术</h4><div class="tech-list">${bioList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
             <div class="process-block block-deep" style="border-left-color:#e65100; background:#fff3e0"><h4 style="color:#e65100;">⚡ 深度处理可选技术</h4><div class="tech-list">${deepList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
@@ -592,6 +776,25 @@
             if (hard === 'high' || hard === 'vhigh') preList.push('钠离子交换软化 / 石灰软化');
         }
 
+        // 预处理目的说明（按用水类型）
+        let purposeNote = '';
+        if (std === 'cooling') {
+            purposeNote = '💡 预处理目的：去除悬浮物和部分硬度，控制结垢、腐蚀和微生物滋生风险，保证循环系统稳定运行';
+        } else if (std === 'drink') {
+            if (source === 'seawater') {
+                purposeNote = '💡 预处理目的：去除悬浮物和胶体，降低浊度，为后续海水反渗透脱盐提供保障';
+            } else if (source === 'brackish') {
+                purposeNote = '💡 预处理目的：去除悬浮物和胶体，降低浊度，为后续苦咸水脱盐提供保障';
+            } else {
+                purposeNote = '💡 预处理目的：去除悬浮物、胶体和病原微生物，降低浊度和色度，减少消毒副产物前体物，确保出水符合饮用水卫生标准';
+            }
+        } else if (std === 'boiler') {
+            purposeNote = '💡 预处理目的：去除悬浮物、胶体和硬度，降低浊度，防止反渗透膜污染结垢，保证锅炉安全运行';
+            preList.push('超滤(UF)——去除胶体、颗粒物和微生物，保护后续反渗透膜');
+        } else if (std === 'ultrapure') {
+            purposeNote = '💡 预处理目的：初步去除悬浮物、胶体和余氯，保护后续反渗透和离子交换设备，保障出水水质';
+        }
+
         // ======== 深度/精处理 ========
         let deepList = [];
         let comboExample = '';
@@ -609,7 +812,7 @@
             comboExample = '🔹 混凝沉淀→砂滤→软化→阻垢缓蚀→杀菌灭藻→旁流过滤';
         } else if (std === 'drink') {
             if (tds === 'high' || tds === 'vhigh') deepList.push('反渗透(RO)改善口感');
-            deepList.push('活性炭过滤（除余氯/有机物）');
+            deepList.push('活性炭过滤（去除嗅味物质、色度、余氯和消毒副产物前体物）');
             deepList.push('紫外线/氯消毒');
             if (source === 'seawater') deepList = ['海水反渗透(SWRO)', '矿化调节', '紫外线消毒'];
             if (source === 'brackish') deepList = ['苦咸水反渗透(BWRO)', '加药阻垢'];
@@ -646,7 +849,7 @@
             <div class="indicator"><strong>💧 水源概要</strong><br>
             水源: ${sourceText[source] || source} &nbsp;|&nbsp; 浊度: ${turbText[turb] || turb} &nbsp;|&nbsp; 硬度: ${hardText[hard] || hard}<br>
             总溶解固体(TDS): ${tdsText} mg/L &nbsp;|&nbsp; 用水标准: ${stdText[std] || std}</div>
-            <div class="process-block block-pre" style="border-left-color:#1565c0; background:#e3f2fd"><h4 style="color:#1565c0;">预处理可选技术</h4><div class="tech-list">${preList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
+            <div class="process-block block-pre" style="border-left-color:#1565c0; background:#e3f2fd"><h4 style="color:#1565c0;">预处理可选技术</h4>${purposeNote ? `<p class="purpose-note">${purposeNote}</p>` : ''}<div class="tech-list">${preList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
             <div class="process-block block-deep" style="border-left-color:#e65100; background:#fff3e0"><h4 style="color:#e65100;">深度/精处理可选技术</h4><div class="tech-list">${deepList.map(t=>`<span class="tech-item">${t}</span>`).join('')}</div></div>
             <div class="rec-combo"><strong>🌟 推荐组合示例</strong> ${comboExample}</div>
         `;
@@ -665,25 +868,36 @@
     });
 
     const modeBtns = document.querySelectorAll('.mode-btn');
-    const panels = { wastewater: document.getElementById('wastewaterPanel'), water: document.getElementById('waterPanel') };
+    const panels = {
+        wastewater: document.getElementById('wastewaterPanel'),
+        water: document.getElementById('waterPanel'),
+        reference: document.getElementById('referencePanel')
+    };
     modeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const mode = btn.dataset.mode;
-            modeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            panels.wastewater.classList.remove('active');
-            panels.water.classList.remove('active');
-            if (mode === 'wastewater') panels.wastewater.classList.add('active');
-            else panels.water.classList.add('active');
+            modeBtns.forEach(b => {
+                b.classList.remove('active');
+                b.classList.remove('water-active');
+            });
+            Object.values(panels).forEach(p => p.classList.remove('active'));
+            if (mode === 'wastewater') {
+                btn.classList.add('active');
+                panels.wastewater.classList.add('active');
+            } else if (mode === 'water') {
+                btn.classList.add('water-active');
+                panels.water.classList.add('active');
+            } else {
+                btn.classList.add('active');
+                panels.reference.classList.add('active');
+            }
         });
     });
 
     renderWastewaterCards();
     renderWaterCards();
-    const firstWasteCard = document.querySelector('#wwCardList .scenario-card');
-    if (firstWasteCard) selectWastewater('domestic', firstWasteCard);
-    const firstWaterCard = document.querySelector('#waterCardList .scenario-card');
-    if (firstWaterCard) selectWater('surface_drink', firstWaterCard);
+    // 默认显示参考面板，不自动选中废水/给水卡片
+    // 用户切换 tab 后再点击场景卡片即可
 </script>
 </body>
 </html>
